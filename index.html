@@ -1,6 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Threat Matrix</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A full-stack LLM abuse-detection & investigation platform: hybrid detection engine, analyst dashboard, and a red-teaming write-up on what gets past it. Built on synthetic data; code available on request.">
+<link rel="canonical" href="https://richiefrank-projects.github.io/threat-matrix-showcase/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Threat Matrix">
+<meta property="og:title" content="Threat Matrix — AI Abuse Detection & Investigation">
+<meta property="og:description" content="A hybrid LLM abuse-detection platform with an analyst dashboard. 92.8% F1 on hardened data; red-teamed across 7 evasion techniques. Code on request.">
+<meta property="og:image" content="https://richiefrank-projects.github.io/threat-matrix-showcase/images/dashboard.png">
+<meta property="og:image:width" content="1512">
+<meta property="og:image:height" content="515">
+<meta property="og:url" content="https://richiefrank-projects.github.io/threat-matrix-showcase/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Threat Matrix — AI Abuse Detection & Investigation">
+<meta name="twitter:description" content="A hybrid LLM abuse-detection platform with an analyst dashboard. 92.8% F1 on hardened data; red-teamed across 7 evasion techniques.">
+<meta name="twitter:image" content="https://richiefrank-projects.github.io/threat-matrix-showcase/images/dashboard.png">
 <style>
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+
   /* Layout: single-column editorial console — sticky signal bar, hero thesis,
      metric tiles, feature grid, honest findings section, access panel. */
   :root{
@@ -155,7 +178,8 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-
+</head>
+<body>
 <header class="bar">
   <div class="wrap">
     <span class="brand"><span class="dot"></span>Threat&nbsp;Matrix</span>
@@ -381,3 +405,6 @@
       try{localStorage.setItem(KEY,next);}catch(e){}});
   })();
 </script>
+
+</body>
+</html>
