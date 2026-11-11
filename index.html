@@ -1,0 +1,383 @@
+<title>Threat Matrix</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: single-column editorial console — sticky signal bar, hero thesis,
+     metric tiles, feature grid, honest findings section, access panel. */
+  :root{
+    --bg:#f5f7f9; --surface:#ffffff; --surface-2:#eef1f5; --fg:#161b24;
+    --muted:#586274; --line:#dde3ea; --accent:#bb4d13; --accent-ink:#8f3a0c;
+    --good:#0e7c62; --crit:#b23f36; --ring:rgba(187,77,19,.25);
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c0f16; --surface:#141924; --surface-2:#1b212e; --fg:#e9edf3;
+    --muted:#95a2b5; --line:#262e3b; --accent:#f09244; --accent-ink:#f5a95f;
+    --good:#43b996; --crit:#e2695b; --ring:rgba(240,146,68,.28); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c0f16; --surface:#141924; --surface-2:#1b212e; --fg:#e9edf3;
+    --muted:#95a2b5; --line:#262e3b; --accent:#f09244; --accent-ink:#f5a95f;
+    --good:#43b996; --crit:#e2695b; --ring:rgba(240,146,68,.28); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-weight:600;line-height:1.15;text-wrap:balance;letter-spacing:-.01em}
+  a{color:inherit}
+  .wrap{width:100%;max-width:1040px;margin-inline:auto;
+    padding-left:max(20px,env(safe-area-inset-left,0px));
+    padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-ink)}
+  .mono{font-family:var(--mono)}
+
+  /* sticky signal bar */
+  header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+    background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line)}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);
+    z-index:21;background:var(--bg)}
+  .bar .wrap{display:flex;align-items:center;gap:16px;padding-block:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em}
+  .brand .dot{width:10px;height:10px;border-radius:2px;background:var(--accent);
+    box-shadow:0 0 0 3px var(--ring)}
+  .bar nav{margin-left:auto;display:flex;gap:18px;align-items:center}
+  .bar nav a{font-size:.9rem;color:var(--muted);text-decoration:none}
+  .bar nav a:hover{color:var(--fg)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem;
+    padding:9px 16px;border-radius:8px;text-decoration:none;border:1px solid transparent;
+    cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-ink)}
+  .btn-ghost{border-color:var(--line);color:var(--fg);background:var(--surface)}
+  .btn-ghost:hover{border-color:var(--accent)}
+  .bar .btn{padding:7px 13px}
+  @media (max-width:640px){.bar nav a.navlink{display:none}}
+
+  section{padding-block:clamp(44px,7vw,78px)}
+  .hero{padding-top:clamp(40px,6vw,64px);padding-bottom:clamp(36px,5vw,56px)}
+  .hero h1{font-size:clamp(2.1rem,6vw,3.6rem);margin:.5rem 0 0}
+  .hero .lede{font-size:clamp(1.05rem,2.4vw,1.3rem);color:var(--muted);
+    max-width:60ch;margin:1.1rem 0 0}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;padding:5px 10px;
+    border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface)}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+  .disclaimer{margin-top:22px;font-size:.84rem;color:var(--muted);border-left:3px solid var(--line);
+    padding-left:14px;max-width:62ch}
+
+  /* metric tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:18px 16px;min-width:0}
+  .tile .n{font-family:var(--mono);font-size:clamp(1.7rem,4vw,2.3rem);font-weight:500;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .tile .n.good{color:var(--good)} .tile .n.acc{color:var(--accent-ink)}
+  .tile .lbl{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .tile .sub{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:8px;
+    text-transform:uppercase;letter-spacing:.08em;opacity:.8}
+
+  .lead-in{max-width:64ch}
+  .lead-in h2{font-size:clamp(1.5rem,3.4vw,2rem);margin:.4rem 0 0}
+  .lead-in p{color:var(--muted);margin-top:.8rem}
+
+  /* feature grid */
+  .feat{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:30px}
+  @media (max-width:720px){.feat{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:22px;min-width:0}
+  .card h3{font-size:1.08rem;margin:0 0 6px;display:flex;align-items:center;gap:9px}
+  .card h3::before{content:"";width:7px;height:18px;border-radius:2px;background:var(--accent);
+    flex:none}
+  .card p{margin:0;color:var(--muted);font-size:.95rem}
+
+  figure{margin:0}
+  .shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface-2);
+    box-shadow:0 18px 40px -28px rgba(0,0,0,.45)}
+  .shot img{display:block;width:100%}
+  figcaption{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-top:10px;
+    letter-spacing:.03em}
+
+  .split{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center}
+  @media (max-width:820px){.split{grid-template-columns:1fr;gap:22px}}
+
+  /* findings callout */
+  .finding{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--crit);
+    border-radius:12px;padding:22px 24px;margin-top:18px}
+  .finding.win{border-left-color:var(--good)}
+  .finding .k{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted)}
+  .finding h3{margin:6px 0 8px;font-size:1.15rem}
+  .finding p{margin:0;color:var(--muted);font-size:.96rem}
+  .finding b{color:var(--fg);font-weight:600}
+
+  /* table */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:22px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
+  th,td{text-align:right;padding:11px 14px;border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  th:first-child,td:first-child{text-align:left;font-family:var(--sans)}
+  thead th{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);font-weight:500}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.hl td{background:color-mix(in srgb,var(--good) 10%,transparent)}
+  .best{color:var(--good);font-weight:600}
+
+  /* video */
+  .video{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:30px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+  .video .frame{width:100%;aspect-ratio:16/9;max-width:720px;border-radius:10px;
+    background:linear-gradient(135deg,var(--surface-2),color-mix(in srgb,var(--accent) 12%,var(--surface-2)));
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+  .play{width:66px;height:66px;border-radius:50%;background:var(--accent);display:flex;
+    align-items:center;justify-content:center;box-shadow:0 0 0 10px var(--ring)}
+  .play svg{margin-left:4px}
+
+  /* access panel */
+  .access{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:30px}
+  .access-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+  @media (max-width:680px){.access-grid{grid-template-columns:1fr}}
+  .contact-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .copyfield{font-family:var(--mono);font-size:.9rem;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:8px;padding:8px 12px;user-select:all;min-width:0;
+    overflow-wrap:anywhere}
+  .copybtn{font-family:var(--sans);font-size:.8rem;border:1px solid var(--line);background:var(--bg);
+    color:var(--fg);border-radius:7px;padding:8px 12px;cursor:pointer}
+  .copybtn:hover{border-color:var(--accent)}
+
+  footer{border-top:1px solid var(--line);padding-block:30px;color:var(--muted);font-size:.84rem}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:baseline}
+  footer .mono{font-size:.76rem}
+  .theme-toggle{background:none;border:1px solid var(--line);border-radius:7px;color:var(--muted);
+    cursor:pointer;padding:6px 10px;font-size:.78rem;font-family:var(--mono)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <span class="brand"><span class="dot"></span>Threat&nbsp;Matrix</span>
+    <nav>
+      <a class="navlink" href="#what">What it does</a>
+      <a class="navlink" href="#findings">Findings</a>
+      <a class="navlink" href="#models">Models</a>
+      <a class="btn btn-primary" href="#access">Request access</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <span class="eyebrow">AI Abuse Detection &amp; Investigation</span>
+    <h1>An analyst's console for LLM abuse.</h1>
+    <p class="lede">A full-stack system that flags abusive model sessions, explains <em>why</em> in
+      plain language, turns a flag into an investigative report, and red-teams itself to find the
+      attacks it misses.</p>
+    <div class="tags">
+      <span class="tag">Hybrid detection</span>
+      <span class="tag">FastAPI + React</span>
+      <span class="tag">OWASP LLM · MITRE ATLAS</span>
+      <span class="tag">Red-teamed</span>
+      <span class="tag">Multi-model benchmark</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#walkthrough">▶ Watch the walkthrough</a>
+      <a class="btn btn-ghost" href="#access">Request code access</a>
+    </div>
+    <p class="disclaimer">A personal project, built with AI-assisted coding on <b>synthetic data</b>.
+      Not affiliated with, endorsed by, or connected to my employer. The repository is private by
+      design and shared on request.</p>
+  </section>
+
+  <section class="wrap" aria-label="Headline metrics" style="padding-top:0">
+    <div class="tiles">
+      <div class="tile"><div class="n acc">92.8%</div><div class="lbl">F1 on the hardened benchmark</div>
+        <div class="sub">1,000 sessions</div></div>
+      <div class="tile"><div class="n">86.6%</div><div class="lbl">Precision (no override cap)</div>
+        <div class="sub">FP 298 → 54</div></div>
+      <div class="tile"><div class="n good">100%</div><div class="lbl">Recall across 7 categories</div>
+        <div class="sub">0 false negatives</div></div>
+      <div class="tile"><div class="n">11 / 22</div><div class="lbl">Red-team probes that beat both layers</div>
+        <div class="sub">the work to be done</div></div>
+    </div>
+  </section>
+
+  <section id="what" class="wrap">
+    <div class="lead-in">
+      <span class="eyebrow">What it does</span>
+      <h2>Detection you can defend in a review.</h2>
+      <p>Every flag is traceable to the rules it fired and the model's own rationale. The point was
+        never a single score — it's a tool an analyst can actually reason with.</p>
+    </div>
+    <div class="feat">
+      <div class="card"><h3>Three-signal hybrid</h3><p>Rule heuristics, an LLM classifier, and
+        embedding similarity against 26 curated attack templates, fused into one transparent composite
+        with a per-signal breakdown.</p></div>
+      <div class="card"><h3>Explainable by design</h3><p>Each alert shows the triggered rules and the
+        model's reasoning, mapped to OWASP LLM and MITRE ATLAS — not a black-box verdict.</p></div>
+      <div class="card"><h3>Investigation copilot</h3><p>Turns a flagged session into a structured
+        report: narrative summary, risk indicators, entities, and a recommended action.</p></div>
+      <div class="card"><h3>Signal discovery loop</h3><p>Clusters flagged sessions to surface new
+        abuse patterns and proposes new detection rules that feed back into the engine.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-top:0">
+    <figure>
+      <div class="shot"><img src="images/dashboard.png" alt="Analyst dashboard showing alerts, risk distribution and category breakdown" loading="lazy"></div>
+      <figcaption>Analyst dashboard — alerts, risk distribution, and per-category detection.</figcaption>
+    </figure>
+  </section>
+
+  <section id="findings" class="wrap">
+    <div class="lead-in">
+      <span class="eyebrow">The honest part</span>
+      <h2>What it catches — and what gets past it.</h2>
+      <p>A red-teaming notebook runs 22 structured attacks across 7 evasion techniques and measures
+        two things: which the model refuses, and which the rule engine catches. The gap between them
+        is where a deployment is relying on the model's safety training with no backstop.</p>
+    </div>
+    <div class="finding">
+      <div class="k">Critical gap</div>
+      <h3>11 of 22 attacks bypassed both the model and the rules.</h3>
+      <p>Every <b>obfuscation</b> and <b>roleplay</b> probe got through both layers. Regex rules scored
+        <b>0.0</b> on fictional-framing jailbreaks, and the model complied with leetspeak and
+        synonym-swapped prompts. The rule engine's own predictions held 21/22 — it fails exactly where
+        you'd expect, which is the argument for the LLM and embedding layers carrying the novel cases.</p>
+    </div>
+    <div class="finding win">
+      <div class="k">Design lesson</div>
+      <h3>A band-aid cap recovered precision; a feature fix earned it.</h3>
+      <p>On hardened data, precision first collapsed to <b>0.539</b> — keyword rules over-fired on benign
+        security questions and the composite could only accumulate evidence, never veto. Replacing the
+        undirected classifier confidence with a <b>signed abuse probability</b> moved the learned LLM
+        weight from <b>0.011 → 0.975</b> and held precision at <b>0.866 with no override cap at all</b>.
+        The model carries it, not a hack.</p>
+    </div>
+    <p style="margin-top:20px;color:var(--muted);font-size:.92rem">The full methodology, the
+      technique-by-technique table, and the multi-turn escalation probes are in the findings write-up
+      (<span class="mono">FINDINGS.md</span>).</p>
+  </section>
+
+  <section id="models" class="wrap" style="padding-top:0">
+    <div class="lead-in">
+      <span class="eyebrow">Multi-model benchmark</span>
+      <h2>The cheapest model won.</h2>
+      <p>Four models classified the same 100 hardened sessions. The premium reasoning model posted the
+        lowest F1 of the frontier three at ~35× the cost — on a well-scoped classification task,
+        extended reasoning was the wrong tool, not a better one.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1</th><th>Cost / 1k</th><th>Latency</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Gemini 2.5 Flash-Lite</td><td>0.923</td><td>1.000</td><td class="best">0.960</td><td class="best">$0.16</td><td>1.28s</td></tr>
+          <tr><td>GPT-4o-mini</td><td>0.857</td><td>0.960</td><td>0.906</td><td>$0.22</td><td>2.28s</td></tr>
+          <tr><td>Claude Sonnet 5</td><td>1.000</td><td>0.800</td><td>0.889</td><td>$5.59</td><td>5.55s</td></tr>
+          <tr><td>Claude Haiku 4.5</td><td>0.758</td><td>1.000</td><td>0.862</td><td>$1.95</td><td>2.28s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:14px;color:var(--muted);font-size:.84rem" class="mono">n=100 · the precise
+      zero-FP model (Sonnet 5) is the ideal veto layer over a cheap high-recall first pass, not a bulk scorer.</p>
+  </section>
+
+  <section class="wrap" style="padding-top:0">
+    <div class="split">
+      <figure>
+        <div class="shot"><img src="images/architecture.png" alt="Detection pipeline architecture diagram" loading="lazy"></div>
+        <figcaption>Detection pipeline — ingest, three-signal scoring, investigation, discovery.</figcaption>
+      </figure>
+      <div>
+        <span class="eyebrow">Under the hood</span>
+        <h2 style="font-size:1.5rem;margin:.4rem 0 .8rem">Built to be read.</h2>
+        <p style="color:var(--muted);margin:0 0 14px">Hand-written provider adapters over frameworks —
+          no LangChain. SQLite so a reviewer can clone and run with zero setup. A sliding-window token
+          rate limiter that keeps the investigation endpoint under the account's per-minute budget.</p>
+        <p style="color:var(--muted);margin:0" class="mono" style="font-size:.85rem">Python · FastAPI ·
+          React (Vite) · 11 REST endpoints · model-agnostic classifier</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="walkthrough" class="wrap">
+    <div class="lead-in" style="margin-bottom:22px">
+      <span class="eyebrow">Walkthrough</span>
+      <h2>Five minutes, end to end.</h2>
+      <p>The dashboard, a live detection run, and the red-teaming analysis.</p>
+    </div>
+    <div class="video">
+      <a class="frame" id="videoFrame" href="#access" aria-label="Request the walkthrough video">
+        <span class="play"><svg width="22" height="26" viewBox="0 0 22 26" fill="#fff" aria-hidden="true"><path d="M0 0l22 13L0 26z"/></svg></span>
+      </a>
+      <p style="margin:0;color:var(--muted);font-size:.92rem">The walkthrough is shared on request
+        alongside repository access. <a href="#access" style="color:var(--accent-ink)">Ask for the link →</a></p>
+    </div>
+  </section>
+
+  <section id="access" class="wrap">
+    <div class="access">
+      <span class="eyebrow">Access</span>
+      <h2 style="font-size:1.6rem;margin:.4rem 0 18px">Code and walkthrough, on request.</h2>
+      <div class="access-grid">
+        <div>
+          <p style="margin:0 0 4px;color:var(--muted);font-size:.95rem">The repository is private by
+            design — a portfolio piece, not an open-source release. Reach out and I'll share read access
+            to the code and the walkthrough video.</p>
+          <div class="contact-row">
+            <span class="copyfield" id="email">richiepfrank@gmail.com</span>
+            <button class="copybtn" id="copyEmail" type="button">Copy</button>
+          </div>
+          <div class="contact-row">
+            <a class="btn btn-ghost" href="https://www.linkedin.com/in/richiefrank" target="_blank" rel="noopener">LinkedIn ↗</a>
+            <a class="btn btn-ghost" href="https://github.com/richiefrank-projects" target="_blank" rel="noopener">GitHub ↗</a>
+          </div>
+        </div>
+        <div>
+          <p class="mono" style="font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px">What's inside</p>
+          <p style="margin:0;color:var(--muted);font-size:.93rem">FastAPI backend · React analyst
+            dashboard · hybrid detection engine · investigation copilot · signal discovery · a
+            red-teaming notebook · multi-model benchmark harness. MIT licensed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">MIT © 2026 Richie Frank</span>
+    <span class="mono">Synthetic data · AI-assisted build</span>
+    <span class="mono">Not affiliated with my employer</span>
+    <button class="theme-toggle" id="themeBtn" type="button" style="margin-left:auto">◐ Theme</button>
+  </div>
+</footer>
+
+<script>
+  // Copy email, with graceful fallback to selection (clipboard can be refused).
+  (function(){
+    var btn=document.getElementById('copyEmail'), field=document.getElementById('email');
+    if(btn&&field){btn.addEventListener('click',function(){
+      var txt=field.textContent.trim();
+      function select(){try{var r=document.createRange();r.selectNodeContents(field);
+        var s=getSelection();s.removeAllRanges();s.addRange(r);}catch(e){}}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){
+          btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy';},1600);
+        }).catch(function(){select();btn.textContent='Select + ⌘C';});
+      }else{select();btn.textContent='Select + ⌘C';}
+    });}
+  })();
+  // Per-viewer theme preference.
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('themeBtn'), KEY='tm-theme';
+    try{var saved=localStorage.getItem(KEY);if(saved)root.setAttribute('data-theme',saved);}catch(e){}
+    function cur(){if(root.getAttribute('data-theme'))return root.getAttribute('data-theme');
+      return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    if(btn)btn.addEventListener('click',function(){
+      var next=cur()==='dark'?'light':'dark';root.setAttribute('data-theme',next);
+      try{localStorage.setItem(KEY,next);}catch(e){}});
+  })();
+</script>
